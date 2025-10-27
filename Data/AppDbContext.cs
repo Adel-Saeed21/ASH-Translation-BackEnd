@@ -13,6 +13,7 @@ namespace ASH_Translation.Data
         }
         public DbSet<Order> Orders { get; set; }
         public DbSet<AdminUser> Admins { get; set; }
+        public DbSet<PasswordResetOtp> PasswordResetOtps { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
