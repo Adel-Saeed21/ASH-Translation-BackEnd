@@ -3,6 +3,7 @@ using ASH_Translation.Data;
 using ASH_Translation.Models;
 using ASH_Translation.Services;
 using ASH_Translation.Services.Interface;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,13 +48,17 @@ namespace ASH_Translation
                         .AllowAnyMethod();
                 });
             });
-
+          
+            builder.Services.AddSwaggerGen();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                
             }
 
             app.UseAuthorization();
