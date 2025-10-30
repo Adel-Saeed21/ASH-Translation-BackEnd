@@ -6,6 +6,10 @@ using ASH_Translation.Services.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ASH_Translation
 {
@@ -26,6 +30,7 @@ namespace ASH_Translation
                 { 
                   options.SuppressModelStateInvalidFilter = false;
                 });
+       
             builder.Services.AddIdentity<AdminUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -37,6 +42,25 @@ namespace ASH_Translation
             .AddDefaultTokenProviders();
             builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
+            // JWT Authentication Configuration
+            var jwtSecurityKey = builder.Configuration["jwt:SecurityKey"];
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecurityKey))
+                };
+            });
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddCors(options =>
@@ -47,6 +71,24 @@ namespace ASH_Translation
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
+            });
+            
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("OtpPolicy", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            AutoReplenishment = true,
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(5),
+                            QueueLimit = 0,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+                        }
+                    )
+                );
             });
           
             builder.Services.AddSwaggerGen();
@@ -61,11 +103,18 @@ namespace ASH_Translation
                 
             }
 
+            app.UseHttpsRedirection();
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHsts();
+            }
+
+            app.UseCors("MyPolicy");
+            app.UseRateLimiter();
+            app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
-            app.UseCors("MyPolicy");
             app.Run();
         }
     }
