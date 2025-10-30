@@ -225,8 +225,6 @@ namespace ASH_Translation.Controllers
 
             _context.RefreshTokens.Add(newRefreshTokenEntity);
             await _context.SaveChangesAsync();
-
-            // Return new tokens
             var tokenResponse = new TokenResponseDto
             {
                 AccessToken = newAccessToken,

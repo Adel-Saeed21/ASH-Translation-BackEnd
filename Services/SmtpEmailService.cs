@@ -16,7 +16,8 @@ namespace ASH_Translation.Services
         public async Task SendEmailAsync(string to, string subject, string htmlMessage)
         {
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_config["Email:From"]));
+            var from = Environment.GetEnvironmentVariable("EMAIL_FROM") ?? _config["Email:From"];
+            email.From.Add(MailboxAddress.Parse(from));
             email.To.Add(MailboxAddress.Parse(to));
             email.Subject = subject;
             email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -27,16 +28,14 @@ namespace ASH_Translation.Services
             using var smtp = new SmtpClient();
             try
             {
-                await smtp.ConnectAsync(
-                    _config["Email:Host"],
-                    int.Parse(_config["Email:Port"]),
-                    MailKit.Security.SecureSocketOptions.SslOnConnect
-                );
+                var host = Environment.GetEnvironmentVariable("EMAIL_HOST") ?? _config["Email:Host"];
+                var portStr = Environment.GetEnvironmentVariable("EMAIL_PORT") ?? _config["Email:Port"];
+                int port = int.TryParse(portStr, out var parsedPort) ? parsedPort : 0;
+                await smtp.ConnectAsync(host, port, MailKit.Security.SecureSocketOptions.SslOnConnect);
 
-                await smtp.AuthenticateAsync(
-                    _config["Email:Username"],
-                    _config["Email:Password"]
-                );
+                var username = Environment.GetEnvironmentVariable("EMAIL_USERNAME") ?? _config["Email:Username"];
+                var password = Environment.GetEnvironmentVariable("EMAIL_PASSWORD") ?? _config["Email:Password"];
+                await smtp.AuthenticateAsync(username, password);
 
                 await smtp.SendAsync(email);
             }

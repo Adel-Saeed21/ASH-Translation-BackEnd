@@ -10,6 +10,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DotNetEnv;
 
 namespace ASH_Translation
 {
@@ -19,8 +20,13 @@ namespace ASH_Translation
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Load environment variables from .env (if present)
+            // This allows configuration via environment without changing appsettings.json
+            Env.Load();
+
             // Add services to the container.
-            var constr = builder.Configuration.GetConnectionString("Constr");
+            var constr = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                ?? builder.Configuration.GetConnectionString("Constr");
             builder.Services.AddDbContext<AppDbContext>(option=>
             {
                 option.UseNpgsql(constr);
@@ -43,7 +49,8 @@ namespace ASH_Translation
             builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
             // JWT Authentication Configuration
-            var jwtSecurityKey = builder.Configuration["jwt:SecurityKey"];
+            var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY")
+                ?? builder.Configuration["jwt:SecurityKey"];
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
