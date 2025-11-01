@@ -23,7 +23,7 @@ namespace ASH_Translation
             // Load environment variables from .env (if present)
             // This allows configuration via environment without changing appsettings.json
             Env.Load();
-
+            
             // Add services to the container.
             var constr = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
                 ?? builder.Configuration.GetConnectionString("Constr");
@@ -100,6 +100,11 @@ namespace ASH_Translation
           
             builder.Services.AddSwaggerGen();
             var app = builder.Build();
+            using(var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
