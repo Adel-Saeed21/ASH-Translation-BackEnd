@@ -69,7 +69,7 @@ namespace ASH_Translation
             });
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            // builder.Services.AddOpenApi();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("MyPolicy", policy =>
@@ -104,7 +104,6 @@ namespace ASH_Translation
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 
