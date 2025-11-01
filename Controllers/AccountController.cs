@@ -16,6 +16,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using DotNetEnv;
 
 namespace ASH_Translation.Controllers
 {
@@ -102,14 +103,15 @@ namespace ASH_Translation.Controllers
                         new Claim(ClaimTypes.NameIdentifier,user.Id),
                         new Claim(ClaimTypes.Role, "Admin")
                     };
-                    var securitkey = _config["JWT:SecurityKey"];
+
+                    var securitkey =  Environment.GetEnvironmentVariable("SecurityKey");
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securitkey));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var issuer = _config["JWT:Issuer"];
-                    var audience = _config["JWT:Audience"];
+                    var issuer = Environment.GetEnvironmentVariable("Issuer");
+                    var audience = Environment.GetEnvironmentVariable("audience");
                     var token = new JwtSecurityToken(
-                        issuer: string.IsNullOrWhiteSpace(issuer) ? null : issuer,
-                        audience: string.IsNullOrWhiteSpace(audience) ? null : audience,
+                        // issuer: string.IsNullOrWhiteSpace(issuer) ? null : issuer,
+                        // audience: string.IsNullOrWhiteSpace(audience) ? null : audience,
                         claims: Claims,
                         notBefore: DateTime.UtcNow,
                         expires: DateTime.UtcNow.AddMinutes(30),
