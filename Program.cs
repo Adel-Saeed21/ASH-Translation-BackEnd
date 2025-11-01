@@ -49,7 +49,7 @@ namespace ASH_Translation
             builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
             // JWT Authentication Configuration
-            var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY")
+            var jwtSecurityKey = Environment.GetEnvironmentVariable("SecurityKey")
                 ?? builder.Configuration["jwt:SecurityKey"];
             builder.Services.AddAuthentication(options =>
             {
