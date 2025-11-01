@@ -84,6 +84,7 @@ namespace ASH_Translation.Controllers
         [HttpPost("login")]
         public async Task<IActionResult>Login(LoginDto loginD)
         {
+            Env.Load();
             var response = new GeneralResponse();
             if (!ModelState.IsValid)
             {
