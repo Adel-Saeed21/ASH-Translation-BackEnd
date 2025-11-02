@@ -582,7 +582,7 @@ When a file is uploaded, the response includes `uploadedFilePath` with a relativ
 
 ### File Size
 
-Currently, there's no explicit file size limit documented. Contact the backend team for specific limits.
+Currently, there's no explicit file size limit documented.
 
 ---
 
@@ -641,12 +641,3 @@ The API includes Swagger documentation when running in Development mode. Access 
 Use Swagger UI to test endpoints interactively.
 
 ---
-
-## Support
-
-For questions or issues, please contact the backend development team.
-
----
-
-**Last Updated:** 2024
-
