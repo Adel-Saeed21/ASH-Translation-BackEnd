@@ -23,7 +23,7 @@ namespace ASH_Translation
             // Load environment variables from .env (if present)
             // This allows configuration via environment without changing appsettings.json
             Env.Load();
-
+            
             // Add services to the container.
             var constr = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
                 ?? builder.Configuration.GetConnectionString("Constr");
@@ -49,7 +49,7 @@ namespace ASH_Translation
             builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
             // JWT Authentication Configuration
-            var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY")
+            var jwtSecurityKey = Environment.GetEnvironmentVariable("SecurityKey")
                 ?? builder.Configuration["jwt:SecurityKey"];
             builder.Services.AddAuthentication(options =>
             {
@@ -69,7 +69,7 @@ namespace ASH_Translation
             });
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            // builder.Services.AddOpenApi();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("MyPolicy", policy =>
@@ -100,11 +100,15 @@ namespace ASH_Translation
           
             builder.Services.AddSwaggerGen();
             var app = builder.Build();
+            using(var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 
