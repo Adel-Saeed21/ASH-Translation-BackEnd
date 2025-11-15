@@ -33,25 +33,25 @@ namespace ASH_Translation
                 // Fallback to default location
                 Env.Load();
             }
-            
+
             // Add services to the container.
             var constr = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
                 ?? builder.Configuration.GetConnectionString("Constr");
-            builder.Services.AddDbContext<AppDbContext>(option=>
+            builder.Services.AddDbContext<AppDbContext>(option =>
             {
                 option.UseNpgsql(constr);
             });
             builder.Services.AddControllers().ConfigureApiBehaviorOptions(
-                options => 
-                { 
-                  options.SuppressModelStateInvalidFilter = false;
+                options =>
+                {
+                    options.SuppressModelStateInvalidFilter = false;
                 });
-       
+
             builder.Services.AddIdentity<AdminUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric =true;
+                options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
             }).AddEntityFrameworkStores<AppDbContext>()
@@ -89,7 +89,7 @@ namespace ASH_Translation
                         .AllowAnyMethod();
                 });
             });
-            
+
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -107,10 +107,10 @@ namespace ASH_Translation
                     )
                 );
             });
-          
+
             builder.Services.AddSwaggerGen();
             var app = builder.Build();
-            using(var scope = app.Services.CreateScope())
+            using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 db.Database.Migrate();
@@ -121,12 +121,12 @@ namespace ASH_Translation
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                
+
             }
 
             app.UseHttpsRedirection();
-                app.UseHsts();
-            
+            app.UseHsts();
+
 
             app.UseCors("MyPolicy");
             app.UseRateLimiter();

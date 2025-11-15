@@ -23,9 +23,9 @@ namespace ASH_Translation.Models.DTO
         public string PreferredContact { get; set; }
         [Required]
         public List<string> Services { get; set; }
-        [Required]
+       
         public string SourceLanguage { get; set; }
-        [Required]
+        
         public string TargetLanguage { get; set; }
         public IFormFile File { get; set; }
     }

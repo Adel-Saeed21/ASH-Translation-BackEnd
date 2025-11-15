@@ -107,7 +107,7 @@ namespace ASH_Translation.Controllers
             return Ok(response);
         }
 
-        [HttpPatch("/orders/{orderId}")]
+        [HttpPatch("getOrder/{orderId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, UpdateOrderStatusDto updateDto)
         {
