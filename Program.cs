@@ -36,10 +36,10 @@ namespace ASH_Translation
 
             // Add services to the container.
             var constr = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                ?? builder.Configuration.GetConnectionString("Constr");
+                ?? builder.Configuration.GetConnectionString("constr");
             builder.Services.AddDbContext<AppDbContext>(option =>
             {
-                option.UseNpgsql(constr);
+                option.UseNpgsql(constr);   
             });
             builder.Services.AddControllers().ConfigureApiBehaviorOptions(
                 options =>
@@ -56,7 +56,9 @@ namespace ASH_Translation
                 options.Password.RequireLowercase = true;
             }).AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
-            builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+            
+            // Register HttpClient for Resend email service
+            builder.Services.AddHttpClient<IEmailService, ResendEmailService>();
 
             // JWT Authentication Configuration
             var jwtSecurityKey = Environment.GetEnvironmentVariable("SecurityKey")
