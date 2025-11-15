@@ -42,7 +42,7 @@ namespace ASH_Translation.Controllers
         }
         //for test //
         [HttpPost("register")]
-        public async Task<IActionResult>Register(LoginDto loginDto)
+        public async Task<IActionResult>Register(RegisterDTO registerDto)
         {
             var response = new GeneralResponse();
             if (!ModelState.IsValid)
@@ -50,7 +50,7 @@ namespace ASH_Translation.Controllers
                 response.SetResponse(false, "Invalid Data");
                 return BadRequest(response);
             }
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.FindByEmailAsync(registerDto.Email);
             if(user!=null)
             {
                 response.SetResponse(false, "this email already registerd");
@@ -58,11 +58,11 @@ namespace ASH_Translation.Controllers
             }
             var admin = new AdminUser
             {
-                FullName = "awwad",
-                Email = loginDto.Email,
-                UserName = loginDto.Email.Split('@')[0],
+                FullName = registerDto.FullName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email.Split('@')[0],
             };
-            var result = await _userManager.CreateAsync(admin, loginDto.Password);
+            var result = await _userManager.CreateAsync(admin, registerDto.Password);
             if (result.Succeeded)
             {
                 if (!await _roleManager.RoleExistsAsync("Admin"))
@@ -108,8 +108,8 @@ namespace ASH_Translation.Controllers
                     var securitkey =  Environment.GetEnvironmentVariable("SecurityKey");
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securitkey));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var issuer = Environment.GetEnvironmentVariable("Issuer");
-                    var audience = Environment.GetEnvironmentVariable("audience");
+                    // var issuer = Environment.GetEnvironmentVariable("Issuer");
+                    // var audience = Environment.GetEnvironmentVariable("audience");
                     var token = new JwtSecurityToken(
                         // issuer: string.IsNullOrWhiteSpace(issuer) ? null : issuer,
                         // audience: string.IsNullOrWhiteSpace(audience) ? null : audience,

@@ -22,7 +22,17 @@ namespace ASH_Translation
 
             // Load environment variables from .env (if present)
             // This allows configuration via environment without changing appsettings.json
-            Env.Load();
+            // Try to load from project directory first, then fallback to current directory
+            var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+            if (File.Exists(envPath))
+            {
+                Env.Load(envPath);
+            }
+            else
+            {
+                // Fallback to default location
+                Env.Load();
+            }
             
             // Add services to the container.
             var constr = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
