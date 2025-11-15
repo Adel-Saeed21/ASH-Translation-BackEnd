@@ -58,7 +58,11 @@ namespace ASH_Translation
             .AddDefaultTokenProviders();
             
             // Register HttpClient for Resend email service
-            builder.Services.AddHttpClient<IEmailService, ResendEmailService>();
+            builder.Services.AddHttpClient<IEmailService, ResendEmailService>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.resend.com/");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
 
             // JWT Authentication Configuration
             var jwtSecurityKey = Environment.GetEnvironmentVariable("SecurityKey")

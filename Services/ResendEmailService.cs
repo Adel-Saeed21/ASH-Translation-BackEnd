@@ -7,14 +7,14 @@ namespace ASH_Translation.Services
     public class ResendEmailService : IEmailService
     {
         private readonly IConfiguration _config;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly string _fromEmail;
 
-        public ResendEmailService(IConfiguration config, IHttpClientFactory httpClientFactory)
+        public ResendEmailService(IConfiguration config, HttpClient httpClient)
         {
             _config = config;
-            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClient;
             
             // Get API key from environment variable or configuration
             _apiKey = Environment.GetEnvironmentVariable("RESEND_API_KEY") ?? _config["Resend:ApiKey"];
@@ -25,15 +25,13 @@ namespace ASH_Translation.Services
             _fromEmail = Environment.GetEnvironmentVariable("EMAIL_FROM") ?? _config["Email:From"] ?? _config["Resend:From"];
             if (string.IsNullOrEmpty(_fromEmail))
                 throw new Exception("EMAIL_FROM is not configured. Please set it in .env file or appsettings.json");
+            
+            // Set Authorization header (BaseAddress and Accept are configured in Program.cs)
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
         }
 
         public async Task SendEmailAsync(string to, string subject, string htmlMessage)
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri("https://api.resend.com/");
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-
             try
             {
                 var emailRequest = new
@@ -47,7 +45,7 @@ namespace ASH_Translation.Services
                 var json = JsonSerializer.Serialize(emailRequest);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await httpClient.PostAsync("emails", content);
+                var response = await _httpClient.PostAsync("emails", content);
                 
                 if (!response.IsSuccessStatusCode)
                 {
