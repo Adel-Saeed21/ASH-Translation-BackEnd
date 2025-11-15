@@ -28,7 +28,7 @@ namespace ASH_Translation.Controllers
             _userManager = userManager;
             _environment = environment;
         }
-        [HttpPost("/makeOrder")]
+        [HttpPost("makeOrder")]
         [AllowAnonymous]
         public async Task<IActionResult>MakeOrder([FromForm] OrderCreateDto dto)
         {
@@ -85,7 +85,7 @@ namespace ASH_Translation.Controllers
             response.SetResponse(true,"the Order saved correctly",order);
             return Ok(response);
         }
-        [HttpPost("/orders")]
+        [HttpGet("getOrders")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetOrder()
         {
