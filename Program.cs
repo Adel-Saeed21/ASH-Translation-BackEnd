@@ -125,10 +125,8 @@ namespace ASH_Translation
             }
 
             app.UseHttpsRedirection();
-            if (!app.Environment.IsDevelopment())
-            {
                 app.UseHsts();
-            }
+            
 
             app.UseCors("MyPolicy");
             app.UseRateLimiter();
