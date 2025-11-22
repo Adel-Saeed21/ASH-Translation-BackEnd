@@ -247,7 +247,7 @@ Verify the OTP received via email and reset the password.
 
 Create a new translation order. This endpoint is public and does not require authentication.
 
-**Endpoint:** `POST /makeOrder`  
+**Endpoint:** `POST /api/order/makeOrder`  
 **Authentication:** Not required
 
 **Content-Type:** `multipart/form-data`
@@ -264,8 +264,8 @@ Create a new translation order. This endpoint is public and does not require aut
 | `wordCount` | integer | No | Number of words to translate |
 | `preferredContact` | string | Yes | Preferred contact method (see [Enums](#enums)) |
 | `services` | array | Yes | List of services required |
-| `sourceLanguage` | string | Yes | Source language code |
-| `targetLanguage` | string | Yes | Target language code |
+| `sourceLanguage` | string | No | Source language code |
+| `targetLanguage` | string | No | Target language code |
 | `file` | file | No | Document file to upload |
 
 **Example Request (JavaScript/Fetch):**
@@ -284,7 +284,7 @@ formData.append('sourceLanguage', 'en');
 formData.append('targetLanguage', 'ar');
 formData.append('file', fileInput.files[0]); // File object
 
-fetch('/makeOrder', {
+fetch('/api/order/makeOrder', {
   method: 'POST',
   body: formData
 });
@@ -292,7 +292,7 @@ fetch('/makeOrder', {
 
 **Example Request (cURL):**
 ```bash
-curl -X POST https://api.example.com/makeOrder \
+curl -X POST https://api.example.com/api/order/makeOrder \
   -F "customerName=John Doe" \
   -F "customerEmail=john@example.com" \
   -F "customerPhoneNumber=+1234567890" \
@@ -351,7 +351,7 @@ curl -X POST https://api.example.com/makeOrder \
 
 Retrieve all orders (Admin only).
 
-**Endpoint:** `POST /orders`  
+**Endpoint:** `GET /api/order/getOrders`  
 **Authentication:** Required (Admin role)
 
 **Request Headers:**
@@ -359,7 +359,7 @@ Retrieve all orders (Admin only).
 Authorization: Bearer <access_token>
 ```
 
-**Request Body:** None
+**Request Body:** None (GET request)
 
 **Success Response (200):**
 ```json
@@ -405,7 +405,7 @@ Authorization: Bearer <access_token>
 
 Update the status of an existing order (Admin only).
 
-**Endpoint:** `PATCH /orders/{orderId}`  
+**Endpoint:** `PATCH /api/order/getOrder/{orderId}`  
 **Authentication:** Required (Admin role)
 
 **URL Parameters:**
@@ -423,6 +423,8 @@ Content-Type: application/json
   "orderStatus": "WorkingON"
 }
 ```
+
+**Note:** The property name is case-insensitive. You can use either `orderStatus` or `OrderStatus`.
 
 **Valid Order Status Values:**
 - `Pending`
@@ -611,8 +613,8 @@ localStorage.setItem('accessToken', data.accessToken);
 localStorage.setItem('refreshToken', data.refreshToken);
 
 // Make authenticated request
-const response = await fetch('/orders', {
-  method: 'POST',
+const response = await fetch('/api/order/getOrders', {
+  method: 'GET',
   headers: {
     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
   }
