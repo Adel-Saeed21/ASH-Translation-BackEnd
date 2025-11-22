@@ -16,8 +16,8 @@ namespace ASH_Translation.Models
         public OrderStatus OrderStatus { get; set; }
         public PreferredContact PreferredContact { get; set; }
         public List<string> Services { get; set; }
-        public string SourceLanguage { get; set; }
-        public string TargetLanguage { get; set; }
+        public string? SourceLanguage { get; set; }
+        public string? TargetLanguage { get; set; }
         public string UploadedFilePath { get; set; }
 
     }

@@ -24,9 +24,9 @@ namespace ASH_Translation.Models.DTO
         [Required]
         public List<string> Services { get; set; }
        
-        public string SourceLanguage { get; set; }
-        
-        public string TargetLanguage { get; set; }
+        public string? SourceLanguage { get; set; }
+        public string? TargetLanguage { get; set; }
+        [Required]
         public IFormFile File { get; set; }
     }
 }
