@@ -133,6 +133,7 @@ namespace ASH_Translation
             app.UseHttpsRedirection();
             app.UseHsts();
 
+            app.UseStaticFiles();
 
             app.UseCors("MyPolicy");
             app.UseRateLimiter();
