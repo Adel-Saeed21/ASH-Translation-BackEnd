@@ -41,7 +41,12 @@ namespace ASH_Translation
             {
                 option.UseNpgsql(constr);   
             });
-            builder.Services.AddControllers().ConfigureApiBehaviorOptions(
+             builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                })
+                .ConfigureApiBehaviorOptions(
                 options =>
                 {
                     options.SuppressModelStateInvalidFilter = false;
