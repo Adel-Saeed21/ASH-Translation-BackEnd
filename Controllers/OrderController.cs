@@ -109,7 +109,7 @@ namespace ASH_Translation.Controllers
 
         [HttpPatch("getOrder/{orderId}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateOrderStatus(int orderId, UpdateOrderStatusDto updateDto)
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateOrderStatusDto updateDto)
         {
             var response = new GeneralResponse();
             if (!ModelState.IsValid)
